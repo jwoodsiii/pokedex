@@ -7,6 +7,40 @@ import (
 	"bufio"
 )
 
+type cliCommand struct {
+	name 		string
+	description	string
+	callback	func() error
+}
+
+// var cmdRegistry = map[string]cliCommand {
+// 	"exit": {
+// 		name: "exit",
+// 		description: "Exit the Pokedex",
+// 		callback: commandExit,
+// 	},
+// 	"help": {
+// 		name: "help",
+// 		description: "Displays a help message",
+// 		callback: commandHelp,
+// 	},
+// }
+
+func getCommands() map[string]cliCommand {
+    return map[string]cliCommand{
+        "help": {
+            name:        "help",
+            description: "Displays a help message",
+            callback:    commandHelp,
+        },
+        "exit": {
+            name:        "exit",
+            description: "Exit the Pokedex",
+            callback:    commandExit,
+        },
+    }
+}
+
 func startRepl() {
 	// create scanner for user input
 	scanner := bufio.NewScanner(os.Stdin)
@@ -17,8 +51,15 @@ func startRepl() {
 			continue
 		}
 		cleaned := cleanInput(input)
-		first := cleaned[0]
-		fmt.Printf("Your command was: %s\n", first)
+		command := cleaned[0]
+		exec, ok := getCommands()[command]
+		if !ok {
+			fmt.Println("Unknown command")
+		} else {
+			if err := exec.callback(); err != nil {
+				fmt.Printf("Error executing callback: %s, %s", exec.name, err)
+			}
+		}
 		fmt.Print("Pokedex > ")
 	}
 }
