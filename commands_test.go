@@ -1,7 +1,7 @@
 package main
 
 import (
-	"os"
+	"os/exec"
 	"testing"
 	"strings"
 	"bytes"
@@ -15,37 +15,59 @@ import (
  * will likely just be a hassle
  */
 
-func TestCommandExit(t *testing.T) {
-	var buf bytes.Buffer
-	old := os.Stdout
-	os.Stdout = &buf
-	defer func() {os.Stdout = old}()
 
-	if err := commandExit(); err != nil {
-		t.Fatalf("commandExit returned error %v", err)
-	}
+// func TestCommandExit(t *testing.T) {
+// 	var buf bytes.Buffer
+// 	old := os.Stdout
+// 	os.Stdout = &buf
+// 	defer func() {os.Stdout = old}()
 
-	out := buf.String()
-	if !strings.Contains(out, "Closing the Pokedex") {
-		t.Fatalf("expected exit to close the Pokedex, but got %q", out)
-	}
+// 	if err := commandExit(); err != nil {
+// 		t.Fatalf("commandExit returned error %v", err)
+// 	}
 
-}
+// 	out := buf.String()
+// 	if !strings.Contains(out, "Closing the Pokedex") {
+// 		t.Fatalf("expected exit to close the Pokedex, but got %q", out)
+// 	}
+// }
 
-func TestCommandHelp(t *testing.T) {
-    // capture stdout
-    var buf bytes.Buffer
-    old := os.Stdout
-    os.Stdout = &buf
-    defer func() { os.Stdout = old }()
+func TestHelpAndExit(t *testing.T) {
+    cmd := exec.Command("go", "run", ".")
+    cmd.Stdin = strings.NewReader("help\nexit\n")
 
-    err := commandHelp()
+    var out bytes.Buffer
+    cmd.Stdout = &out
+    cmd.Stderr = &out
+
+    err := cmd.Run()
     if err != nil {
-        t.Fatalf("commandHelp returned error: %v", err)
+        t.Fatalf("program failed: %v", err)
     }
 
-    out := buf.String()
-    if !strings.Contains(out, "Welcome to the Pokedex!") {
-        t.Fatalf("expected help output to contain welcome message, got %q", out)
+    s := out.String()
+    if !strings.Contains(s, "Welcome to the Pokedex!") {
+        t.Errorf("expected help output, got %q", s)
+    }
+    if !strings.Contains(s, "Closing the Pokedex... Goodbye!") {
+        t.Errorf("expected exit output, got %q", s)
     }
 }
+
+// func TestCommandHelp(t *testing.T) {
+//     // capture stdout
+//     var buf bytes.Buffer
+//     old := os.Stdout
+//     os.Stdout = &buf
+//     defer func() { os.Stdout = old }()
+
+//     err := commandHelp()
+//     if err != nil {
+//         t.Fatalf("commandHelp returned error: %v", err)
+//     }
+
+//     out := buf.String()
+//     if !strings.Contains(out, "Welcome to the Pokedex!") {
+//         t.Fatalf("expected help output to contain welcome message, got %q", out)
+//     }
+// }
