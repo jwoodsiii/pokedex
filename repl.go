@@ -1,16 +1,16 @@
 package main
 
 import (
-	"os"
-	"fmt"
-	"strings"
 	"bufio"
+	"fmt"
+	"os"
+	"strings"
 )
 
 type cliCommand struct {
-	name 		string
-	description	string
-	callback	func() error
+	name        string
+	description string
+	callback    func() error
 }
 
 // var cmdRegistry = map[string]cliCommand {
@@ -27,18 +27,23 @@ type cliCommand struct {
 // }
 
 func getCommands() map[string]cliCommand {
-    return map[string]cliCommand{
-        "help": {
-            name:        "help",
-            description: "Displays a help message",
-            callback:    commandHelp,
-        },
-        "exit": {
-            name:        "exit",
-            description: "Exit the Pokedex",
-            callback:    commandExit,
-        },
-    }
+	return map[string]cliCommand{
+		"help": {
+			name:        "help",
+			description: "Displays a help message",
+			callback:    commandHelp,
+		},
+		"exit": {
+			name:        "exit",
+			description: "Exit the Pokedex",
+			callback:    commandExit,
+		},
+		"map": {
+			name:        "map",
+			description: "Displays a map of Pokemon locations",
+			callback:    commandMap,
+		},
+	}
 }
 
 func startRepl() {
