@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"github.com/jwoodsiii/pokedex/internal/pokeapi"
 )
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(*pokeapi.Config) error
 }
 
 // var cmdRegistry = map[string]cliCommand {
@@ -43,11 +44,20 @@ func getCommands() map[string]cliCommand {
 			description: "Displays a map of Pokemon locations",
 			callback:    commandMap,
 		},
+		"mapb": {
+			name:			"mapb",
+			description:	"Displays previously shown map of Pokemon locations",
+			callback:		commandMapB,
+		},
 	}
 }
 
 func startRepl() {
 	// create scanner for user input
+	var config = &pokeapi.Config {
+		Next: "",
+		Previous: nil,
+	}
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print("Pokedex > ")
 	for scanner.Scan() {
@@ -61,7 +71,7 @@ func startRepl() {
 		if !ok {
 			fmt.Println("Unknown command")
 		} else {
-			if err := exec.callback(); err != nil {
+			if err := exec.callback(config); err != nil {
 				fmt.Printf("Error executing callback: %s, %s", exec.name, err)
 			}
 		}
