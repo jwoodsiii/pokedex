@@ -11,18 +11,14 @@ type cacheEntry struct {
 }
 
 type Cache struct {
-	entries		map[string]cacheEntry
-	mu			*sync.Mutex
-	interval	time.Duration
-
+    entries 	map[string]cacheEntry
+    mu   		sync.Mutex
 }
 
-// You'll probably want to expose a NewCache() function that creates a new cache with a configurable interval (time.Duration).
-func NewCache(interval time.Duration) Cache {
-	ch := Cache{
-		entries: 	map[string]cacheEntry{},
-		interval: 	interval,
-	}
-	ch.reapLoop()
-	return ch
+func NewCache(interval time.Duration) *Cache {
+    c := &Cache{
+        entries: make(map[string]cacheEntry),
+    }
+    go c.reapLoop(interval)
+    return c
 }

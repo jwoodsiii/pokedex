@@ -10,9 +10,9 @@ import (
 )
 
 type config struct {
-	pokeapiClient pokeapi.Client
-	nextUrl       *string
-	prevUrl       *string
+	pokeapiClient 		pokeapi.Client
+	nextUrl       		*string
+	prevUrl       		*string
 }
 
 type cliCommand struct {

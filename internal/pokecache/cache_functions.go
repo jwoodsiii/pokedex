@@ -1,8 +1,6 @@
 package pokecache
 
 import (
-	"fmt"
-	"sync"
 	"errors"
 	"time"
 )
@@ -14,7 +12,7 @@ func (ch *Cache) Add(key string, val []byte) error {
 	if key == "" || val == nil {
 		return errors.New("need to supply a value for both key and val")
 	}
-	ch.entries[key] = val
+	ch.entries[key] = cacheEntry{createdAt: time.Now().UTC(), val: val}
 	return nil
 }
 
@@ -27,7 +25,7 @@ func (ch *Cache) Get(key string) ([]byte, bool) {
 	if val, ok := ch.entries[key]; ok == false {
 		return nil, ok
 	} else {
-		return val, ok
+		return val.val, ok
 	}
 }
 
@@ -37,18 +35,20 @@ func (ch *Cache) Get(key string) ([]byte, bool) {
 // This makes sure that the cache doesn't grow too large over time.
 // For example, if the interval is 5 seconds, and an entry was added 7 seconds ago,
 // that entry should be removed.
-func (ch *Cache) reapLoop() {
-	ticker := time.NewTicker(ch.interval)
-	defer ticker.Stop()
-	go func() {
-		ch.mu.Lock()
-		defer ch.mu.Unlock()
-		for t := range ticker.C {
-			for k, v ch.entries {
-				if time.Now().Sub(v.createdAt) >= ch.interval {
-					delete(ch.entries, k)
-				}
-			}
-		}
-	}
+func (c *Cache) reapLoop(interval time.Duration) {
+    ticker := time.NewTicker(interval)
+    for range ticker.C {
+        c.reap(time.Now().UTC(), interval)
+    }
+}
+
+func (c *Cache) reap(now time.Time, interval time.Duration) {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    cutoff := now.Add(-interval)
+    for k, v := range c.entries {
+        if v.createdAt.Before(cutoff) {
+            delete(c.entries, k)
+        }
+    }
 }
