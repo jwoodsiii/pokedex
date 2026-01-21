@@ -10,9 +10,9 @@ import (
 )
 
 type config struct {
-	pokeapiClient 		pokeapi.Client
-	nextUrl       		*string
-	prevUrl       		*string
+	pokeapiClient pokeapi.Client
+	nextUrl       *string
+	prevUrl       *string
 }
 
 type cliCommand struct {
@@ -24,8 +24,12 @@ type cliCommand struct {
 func startRepl(cfg *config) {
 	// create scanner for user input
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Print("Pokedex > ")
-	for scanner.Scan() {
+
+	for {
+		fmt.Print("Pokedex> ")
+		if !scanner.Scan() { // wait for input
+			break // exit on EOF or scan error
+		}
 		input := scanner.Text()
 		if len(input) == 0 {
 			continue
@@ -35,15 +39,15 @@ func startRepl(cfg *config) {
 		exec, ok := getCommands()[command]
 		if !ok {
 			fmt.Println("Unknown command")
+			continue
 		}
 		args := []string{}
 		if len(cleaned) > 1 {
-    		args = cleaned[1:]
+			args = cleaned[1:]
 		}
 		if err := exec.callback(cfg, args...); err != nil {
 			fmt.Printf("Error executing callback: %s, %s", exec.name, err)
 		}
-		fmt.Print("Pokedex > ")
 	}
 }
 

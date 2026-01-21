@@ -2,8 +2,6 @@ package pokeapi
 
 import (
 	"encoding/json"
-	"io"
-	"net/http"
 	"log"
 )
 
@@ -24,25 +22,20 @@ func (c *Client) ListLocationAreas(pageUrl *string) (LocationAreas, error) {
 		return locationArea, nil
 	}
 
-	req, err := http.NewRequest("GET", url, nil)
+	data, err := fetch(&c.httpClient, url)
 	if err != nil {
 		return LocationAreas{}, err
 	}
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return LocationAreas{}, err
-	}
-	// if we get here its due to a cache miss, add our resp.Body to the cache for future queries
-	defer resp.Body.Close()
 
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return LocationAreas{}, err
-	}
 	log.Printf("adding url: %s to cache", url)
 	c.pokeCache.Add(url, data)
-	if err := json.Unmarshal(data, &locationArea); err != nil {
-		return LocationAreas{}, err
+	tmp, err := unmarshal[LocationAreas](data)
+	if err != nil {
+		return LocationAreas{}, nil
 	}
+	locationArea = *tmp
+	// if err := json.Unmarshal(data, &locationArea); err != nil {
+	// 	return LocationAreas{}, err
+	// }
 	return locationArea, nil
 }

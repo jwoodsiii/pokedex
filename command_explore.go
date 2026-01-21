@@ -6,12 +6,12 @@ import (
 
 // list all encounterable Pokemon from given location area
 
-func commandExplore(cfg *config, args  ...string) error {
+func commandExplore(cfg *config, args ...string) error {
 	if len(args) != 1 {
-        fmt.Println("usage: explore <location-area>")
-        return nil
-    }
-    city := args[0]
+		fmt.Println("usage: explore <location-area>")
+		return nil
+	}
+	city := args[0]
 	encounters, err := cfg.pokeapiClient.ExploreLocationArea(city)
 	if err != nil {
 		return err
