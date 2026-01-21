@@ -7,7 +7,11 @@ import (
 
 // pull location areas from Pokemon world, pulls in batches of 20
 
-func commandMap(cfg *config) error {
+func commandMap(cfg *config, args ...string) error {
+	if len(args) != 0 {
+        fmt.Println("usage: map")
+        return nil
+    }
 	locationAreas, err := cfg.pokeapiClient.ListLocationAreas(cfg.nextUrl)
 	if err != nil {
 		return err
@@ -21,7 +25,12 @@ func commandMap(cfg *config) error {
 	return nil
 }
 
-func commandMapB(cfg *config) error {
+func commandMapB(cfg *config, args ...string) error {
+	if len(args) != 0 {
+        fmt.Println("usage: mapb")
+        return nil
+    }
+
 	if cfg.prevUrl == nil {
 		return errors.New("you're on the first page\n")
 	}

@@ -18,7 +18,7 @@ type config struct {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, ...string) error
 }
 
 func startRepl(cfg *config) {
@@ -35,10 +35,13 @@ func startRepl(cfg *config) {
 		exec, ok := getCommands()[command]
 		if !ok {
 			fmt.Println("Unknown command")
-		} else {
-			if err := exec.callback(cfg); err != nil {
-				fmt.Printf("Error executing callback: %s, %s", exec.name, err)
-			}
+		}
+		args := []string{}
+		if len(cleaned) > 1 {
+    		args = cleaned[1:]
+		}
+		if err := exec.callback(cfg, args...); err != nil {
+			fmt.Printf("Error executing callback: %s, %s", exec.name, err)
 		}
 		fmt.Print("Pokedex > ")
 	}
@@ -72,6 +75,11 @@ func getCommands() map[string]cliCommand {
 			name:        "mapb",
 			description: "Displays previously shown map of Pokemon locations",
 			callback:    commandMapB,
+		},
+		"explore": {
+			name:        "explore",
+			description: "Explore a location area, listing all pokemon that inhabit the provided area",
+			callback:    commandExplore,
 		},
 	}
 }

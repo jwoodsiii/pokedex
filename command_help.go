@@ -5,7 +5,11 @@ import (
 )
 
 // Display help information
-func commandHelp(cfg *config) error {
+func commandHelp(cfg *config, args ...string) error {
+	if len(args) != 0 {
+        fmt.Println("usage: help")
+        return nil
+    }
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage: ")
 	for _, v := range getCommands() {
