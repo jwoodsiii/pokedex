@@ -11,6 +11,8 @@ const (
 	baseUrl = "https://pokeapi.co/api/v2/"
 )
 
+type Pokedex map[string]Pokemon
+
 // Abstract fetching data from PokeAPI endpoints
 func fetch(client *http.Client, url string) ([]byte, error) {
 	if url == "" {

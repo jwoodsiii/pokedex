@@ -21,22 +21,6 @@ func (c *Client) ExploreLocationArea(city string) (EncounterArea, error) {
 	if err != nil {
 		return EncounterArea{}, err
 	}
-
-	// req, err := http.NewRequest("GET", url, nil)
-	// if err != nil {
-	// 	return EncounterArea{}, err
-	// }
-	// resp, err := c.httpClient.Do(req)
-	// if err != nil {
-	// 	return EncounterArea{}, err
-	// }
-
-	// defer resp.Body.Close()
-
-	// data, err := io.ReadAll(resp.Body)
-	// if err != nil {
-	// 	return EncounterArea{}, err
-	// }
 	log.Printf("adding url: %s to cache", url)
 	c.pokeCache.Add(url, data)
 	tmp, err := unmarshal[EncounterArea](data)
@@ -44,8 +28,5 @@ func (c *Client) ExploreLocationArea(city string) (EncounterArea, error) {
 		return EncounterArea{}, nil
 	}
 	encounter = *tmp
-	// if err := json.Unmarshal(data, &encounter); err != nil {
-	// 	return EncounterArea{}, err
-	// }
 	return encounter, nil
 }
