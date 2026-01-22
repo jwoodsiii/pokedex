@@ -46,7 +46,7 @@ func startRepl(cfg *config) {
 			args = cleaned[1:]
 		}
 		if err := exec.callback(cfg, args...); err != nil {
-			fmt.Printf("Error executing callback: %s, %s", exec.name, err)
+			fmt.Printf("Error executing callback: %s, %s\n", exec.name, err)
 		}
 	}
 }
@@ -89,6 +89,11 @@ func getCommands() map[string]cliCommand {
 			name:        "catch",
 			description: "Gotta catch 'em all",
 			callback:    commandCatch,
+		},
+		"inspect": {
+			name:        "inspect",
+			description: "Displays stats of provided pokemon from pokedex",
+			callback:    commandInspect,
 		},
 	}
 }
